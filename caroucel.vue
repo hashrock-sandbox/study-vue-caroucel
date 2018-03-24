@@ -17,12 +17,13 @@ export default {
       drag: false,
       offset: 0,
       move: 0,
-      target: 0
+      target: 0,
+      animate: false
     };
   },
   computed: {
     currStyle() {
-      if (!this.drag) {
+      if (this.animate) {
         return {
           transform: `translate(${this.target * 400 - 400}px, 0)`,
           transition: "all 0.5s"
@@ -51,19 +52,27 @@ export default {
     stopDrag() {
       if (this.move > 100) {
         this.target = 1;
+        this.animate = true;
         setTimeout(() => {
           this.target = 0;
+          this.animate = false;
         }, 500);
       }
       if (this.move < -100) {
         this.target = -1;
+        this.animate = true;
         setTimeout(() => {
           this.target = 0;
+          this.animate = false;
         }, 500);
       }
       this.drag = false;
+      this.animate = true;
       this.offset = 0;
       this.move = 0;
+      setTimeout(() => {
+        this.animate = false;
+      }, 500);
     }
   },
   mounted() {
