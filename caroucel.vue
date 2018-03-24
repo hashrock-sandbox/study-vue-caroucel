@@ -57,7 +57,6 @@ export default {
         var target_rect = e.currentTarget.getBoundingClientRect();
         var x = e.clientX - target_rect.left;
         this.move = x - this.offset;
-        console.log(this.move);
       }
     },
     stopDrag() {
@@ -90,7 +89,6 @@ export default {
   },
   mounted() {
     document.body.addEventListener("contextmenu", e => {
-      console.log("hmm");
       e.preventDefault();
       return false;
     });
