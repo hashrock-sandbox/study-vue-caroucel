@@ -1,9 +1,11 @@
 <template>
   <div @pointerup="stopDrag"  @pointermove="onDrag">
     <div class="wrapper" @pointerdown="startDrag" >
-      <div class="item prev" :style="currStyle"></div>
-      <div class="item curr" :style="currStyle"></div>
-      <div class="item next" :style="currStyle"></div>
+      <div class="group" :style="currStyle">
+        <div class="item prev">prev</div>
+        <div class="item curr">current</div>
+        <div class="item next">next</div>
+      </div>
     </div>
   </div>
 </template>
@@ -15,18 +17,19 @@ export default {
       drag: false,
       offset: 0,
       move: 0,
-      cx: 0
+      target: 0
     };
   },
   computed: {
     currStyle() {
       if (!this.drag) {
         return {
+          transform: `translate(${this.target * 400 - 400}px, 0)`,
           transition: "all 0.5s"
         };
       }
       return {
-        transform: `translate(${this.move}px, 0)`
+        transform: `translate(${this.move - 400}px, 0)`
       };
     }
   },
@@ -36,19 +39,28 @@ export default {
       var x = e.clientX - target_rect.left;
       this.drag = true;
       this.offset = x;
-      // this.offset = e.offsetX;
     },
     onDrag(e) {
       if (this.drag) {
         var target_rect = e.currentTarget.getBoundingClientRect();
         var x = e.clientX - target_rect.left;
         this.move = x - this.offset;
-        // this.offset = e.offsetX;
-        // this.cx = this.cx + this.move;
-        // console.log("ondrag");
+        console.log(this.move);
       }
     },
-    stopDrag(e) {
+    stopDrag() {
+      if (this.move > 100) {
+        this.target = 1;
+        setTimeout(() => {
+          this.target = 0;
+        }, 500);
+      }
+      if (this.move < -100) {
+        this.target = -1;
+        setTimeout(() => {
+          this.target = 0;
+        }, 500);
+      }
       this.drag = false;
       this.offset = 0;
       this.move = 0;
@@ -81,13 +93,14 @@ export default {
 
 .prev {
   background: #faa;
-  left: -100%;
+  left: 0%;
 }
 .curr {
   background: #afa;
+  left: 100%;
 }
 .next {
   background: #aaf;
-  left: 100%;
+  left: 200%;
 }
 </style>
