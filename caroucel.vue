@@ -2,9 +2,9 @@
   <div @pointerup="stopDrag"  @pointermove="onDrag">
     <div class="wrapper" @pointerdown="startDrag" >
       <div class="group" :style="currStyle">
-        <div class="item prev">prev</div>
-        <div class="item curr">current</div>
-        <div class="item next">next</div>
+        <div class="item prev" v-html="page(-1)"></div>
+        <div class="item curr" v-html="page(0)"></div>
+        <div class="item next" v-html="page(1)"></div>
       </div>
     </div>
   </div>
@@ -18,7 +18,15 @@ export default {
       offset: 0,
       move: 0,
       target: 0,
-      animate: false
+      animate: false,
+      pageIndex: 1,
+      pages: [
+        `<div class="page" style="background: #FAA;">Page 1</div>`,
+        `<div class="page" style="background: #AFA;">Page 2</div>`,
+        `<div class="page" style="background: #AAF;">Page 3</div>`,
+        `<div class="page" style="background: #FFA;">Page 4</div>`,
+        `<div class="page" style="background: #AFF;">Page 5</div>`
+      ]
     };
   },
   computed: {
@@ -35,6 +43,9 @@ export default {
     }
   },
   methods: {
+    page(index) {
+      return this.pages[this.pageIndex + index];
+    },
     startDrag(e) {
       var target_rect = e.currentTarget.getBoundingClientRect();
       var x = e.clientX - target_rect.left;
@@ -54,6 +65,7 @@ export default {
         this.target = 1;
         this.animate = true;
         setTimeout(() => {
+          this.pageIndex--;
           this.target = 0;
           this.animate = false;
         }, 500);
@@ -62,6 +74,7 @@ export default {
         this.target = -1;
         this.animate = true;
         setTimeout(() => {
+          this.pageIndex++;
           this.target = 0;
           this.animate = false;
         }, 500);
@@ -99,17 +112,26 @@ export default {
   position: absolute;
   user-select: none;
 }
+.page {
+  border: 4px solid #333;
+  height: 100%;
+  background: white;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #333;
+}
 
 .prev {
-  background: #faa;
   left: 0%;
 }
 .curr {
-  background: #afa;
   left: 100%;
 }
 .next {
-  background: #aaf;
   left: 200%;
 }
 </style>
