@@ -1,5 +1,5 @@
 <template>
-  <div @pointerup="stopDrag"  @pointermove="onDrag">
+  <div @pointerleave="stopDrag" @pointerup="stopDrag"  @pointermove="onDrag">
     <div class="wrapper" @pointerdown="startDrag" >
       <div class="group" :style="currStyle">
         <div class="item prev" v-html="page(-1)"></div>
@@ -11,6 +11,11 @@
 </template>
 
 <script>
+let globalLeave;
+function mod(n, m) {
+  return (n % m + m) % m;
+}
+
 export default {
   data() {
     return {
@@ -44,7 +49,7 @@ export default {
   },
   methods: {
     page(index) {
-      return this.pages[this.pageIndex + index];
+      return this.pages[mod(this.pageIndex + index, this.pages.length)];
     },
     startDrag(e) {
       var target_rect = e.currentTarget.getBoundingClientRect();
@@ -88,10 +93,12 @@ export default {
     }
   },
   mounted() {
-    document.body.addEventListener("contextmenu", e => {
-      e.preventDefault();
-      return false;
+    globalLeave = document.body.addEventListener("pointerleave", () => {
+      this.stopDrag();
     });
+  },
+  beforeDestroy() {
+    document.body.removeEventListener("pointerleave", globalLeave);
   }
 };
 </script>
@@ -103,6 +110,7 @@ export default {
   width: 400px;
   height: 300px;
   position: relative;
+  touch-action: none;
 }
 .item {
   width: 400px;
